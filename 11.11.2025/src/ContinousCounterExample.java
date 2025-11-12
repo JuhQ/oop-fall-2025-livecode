@@ -7,11 +7,22 @@ class ContinuousCounter implements Runnable {
         counter = 1;
     }
 
+    private synchronized void increaseCounter() {
+        counter++;
+    }
+
     public void run() {
         try {
             while (true) {
-                System.out.println(counter++);
-                Thread.sleep(1000);  // write one value/second
+                this.increaseCounter();
+                System.out.println(counter);
+                /*
+                synchronized (this) {
+                    System.out.println(counter++);
+                }
+                */
+
+                Thread.sleep(100);  // write one value/second
             }
         } catch (InterruptedException e) {
             System.out.println("Thread interrupted");
@@ -25,8 +36,7 @@ public class ContinousCounterExample {
         String   s       = " ";
         Scanner  scanner = new Scanner(System.in);
         Runnable writer  = new ContinuousCounter();
-        Thread t         = new Thread();
-
+        Thread t         = new Thread(writer);
         t.start();
         Thread t2         = new Thread(writer);
         t2.start();
